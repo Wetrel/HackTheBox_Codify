@@ -46,11 +46,14 @@ Con acceso al sistema, el siguiente objetivo era escalar privilegios. Este paso 
 ![NMAP](./img/Password.PNG)
 
 Utilizando la herramienta John The Ripper y la wordlist rockyou, consigo crackear el hash: 
+
 echo '$2a$12$SOn8Pf6z8fO/***********//P6vLRJJl7gCUEiYBU2iLHn4G/p/Zw2' > hashJoshua.txt
 john --format=bcrypt --wordlist=/usr/share/wordlists/rockyou.txt hashJoshua.txt 
 
 Pruebo a iniciar sesión como el usuario Joshua utilizando la contraseña del hash, y consigo acceso al usuario.
 En su directorio home se encuentra la user flag, primer objetivo cumplido, pero ahora debo intentar escalar privilegios hacia el usuario root.
 
+
 Utilizando el comando sudo -l se puede observar que el usuario joshua puede ejecutar mysql-backup.sh como root. Lo que nos da un punto de apoyo para poder escalar privilegios.
 
+![NMAP](./img/SudoL.PNG)
