@@ -19,6 +19,7 @@ El propósito principal de este repositorio es educativo. Busco compartir mi enf
 ## Análisis Inicial y Enumeración
 
 El primer paso en cualquier desafío de CTF (Capture The Flag) es comprender el terreno. Para ello, arranqué la máquina "Codify" en Hack The Box y utilicé `nmap`, una herramienta esencial en el arsenal de cualquier entusiasta de la seguridad, para realizar un escaneo de los puertos. El escaneo reveló tres puertos abiertos: 22 (SSH), 8080 y 3000.
+
 ![NMAP](./img/Nmap.PNG)
 
 El puerto 8080 generalmente aloja aplicaciones web, pero en este caso, intentar acceder resultó en una redirección a un callejón sin salida. Los desarrolladores a menudo utilizan el puerto 3000 para pruebas locales, lo que me hizo pensar que podría contener una pista crucial. Al visitar este puerto en mi navegador, me encontré con una página web que presentaba un entorno sandbox para ejecutar código Javascript
