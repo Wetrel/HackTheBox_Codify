@@ -28,6 +28,8 @@ El puerto 8080 generalmente aloja aplicaciones web, pero en este caso, intentar 
 
 La página web en el puerto 3000 era un rompecabezas en sí misma, dividida en varias secciones incluyendo 'About Us', 'Editor', 'Limitations', y una página de bienvenida. La sección 'Limitations' era particularmente interesante, ya que detallaba las restricciones impuestas a la ejecución del código, excluyendo explícitamente módulos potencialmente peligrosos como `fs` y `child_process`. Estas restricciones sugieren una protección consciente contra ataques maliciosos, pero también señalan hacia las vulnerabilidades que el creador consideró más críticas.
 
+![NMAP](./img/AboutUs.PNG)
+
 La verdadera mina de oro estaba en 'About Us', donde se mencionaba la librería usada para sandboxing. Una búsqueda en el repositorio de GitHub de la librería reveló varias vulnerabilidades documentadas. Probé varias hasta encontrar una que permitiera ejecutar código fuera del sandbox, utilizando [Gist de GitHub](https://gist.github.com/arkark/e9f5cf5782dec8321095be3e52acf5ac).
 
 ## Establecimiento de un Shell Inverso
